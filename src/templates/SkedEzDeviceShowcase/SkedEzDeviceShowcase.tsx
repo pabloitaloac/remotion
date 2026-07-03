@@ -10,6 +10,7 @@ import {
 } from "remotion";
 import { CanvasTexture, DoubleSide, SRGBColorSpace } from "three";
 import { AppleDeviceModel } from "../../components/devices";
+import type { AppleDeviceFinish } from "../../components/devices";
 import type { AppleDeviceId } from "../../assets/devices/appleDeviceModels";
 import {
   SaaSCard3D,
@@ -67,6 +68,7 @@ type PresentedDeviceProps = {
   startFrame: number;
   durationInFrames: number;
   baseScale?: number;
+  finish?: AppleDeviceFinish;
   modelRotation?: [number, number, number];
   screen: ScreenPlacement;
   spinTurns?: number;
@@ -85,6 +87,7 @@ const PresentedDevice = ({
   startFrame,
   durationInFrames,
   baseScale = 1,
+  finish,
   modelRotation = [0, 0, 0],
   screen,
   spinTurns = 1,
@@ -123,6 +126,7 @@ const PresentedDevice = ({
     >
       <AppleDeviceModel
         deviceId={deviceId}
+        finish={finish}
         fitTo={fitTo}
         rotation={modelRotation}
         screenTexturePath={screen.texturePath}
@@ -405,6 +409,7 @@ const Stage = ({ frame }: { frame: number }) => (
         durationInFrames={70}
         finalRotation={[0.02, -0.08, 0.06]}
         fitTo={1.58}
+        finish="deep-blue"
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
         from={[-4.8, 8.4, 7.52]}

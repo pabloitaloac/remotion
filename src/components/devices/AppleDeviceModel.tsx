@@ -25,6 +25,7 @@ type Vector3Tuple = [number, number, number];
 
 type AppleDeviceModelProps = {
   deviceId: AppleDeviceId;
+  finish?: AppleDeviceFinish;
   fitTo?: number;
   position?: Vector3Tuple;
   rotation?: Vector3Tuple;
@@ -37,6 +38,73 @@ type ScreenMaterialConfig = {
   repeat?: [number, number];
   offset?: [number, number];
   clamp?: boolean;
+};
+
+export type AppleDeviceFinishMaterialOverride = {
+  materialNames: string[];
+  color: string;
+  metalness?: number;
+  roughness?: number;
+};
+
+export type AppleDeviceFinish =
+  | "default"
+  | "cosmic-orange"
+  | "deep-blue"
+  | "silver";
+
+export const IPHONE_17_PRO_MAX_FINISHES: Record<
+  Exclude<AppleDeviceFinish, "default">,
+  AppleDeviceFinishMaterialOverride[]
+> = {
+  "cosmic-orange": [
+    {
+      materialNames: ["basecolor.001", "backpanel.001", "Material.005"],
+      color: "#d45b24",
+      metalness: 0.76,
+      roughness: 0.5,
+    },
+    {
+      materialNames: ["metalframe.002", "Material.006"],
+      color: "#8f330f",
+      metalness: 0.78,
+      roughness: 0.46,
+    },
+  ],
+  "deep-blue": [
+    {
+      materialNames: ["basecolor.001", "backpanel.001", "Material.005"],
+      color: "#1c3768",
+      metalness: 0.74,
+      roughness: 0.5,
+    },
+    {
+      materialNames: ["metalframe.002", "Material.006"],
+      color: "#0d1d3d",
+      metalness: 0.8,
+      roughness: 0.44,
+    },
+  ],
+  silver: [
+    {
+      materialNames: ["basecolor.001", "backpanel.001", "Material.005"],
+      color: "#d9dbd5",
+      metalness: 0.72,
+      roughness: 0.48,
+    },
+    {
+      materialNames: ["metalframe.002", "Material.006"],
+      color: "#aeb4ae",
+      metalness: 0.78,
+      roughness: 0.42,
+    },
+  ],
+};
+
+const DEVICE_FINISH_CONFIGS: Partial<
+  Record<AppleDeviceId, Record<string, AppleDeviceFinishMaterialOverride[]>>
+> = {
+  "iphone-17-pro-max": IPHONE_17_PRO_MAX_FINISHES,
 };
 
 const DEVICE_SCREEN_MATERIAL_CONFIGS: Record<
@@ -191,13 +259,100 @@ const replaceScreenMaterials = ({
   });
 };
 
+const replaceFinishMaterial = (
+  material: Material,
+  override: AppleDeviceFinishMaterialOverride,
+) => {
+  const replacement = material.clone();
+
+  if (replacement instanceof MeshStandardMaterial) {
+    replacement.color = new Color(override.color);
+
+    if (override.metalness !== undefined) {
+      replacement.metalness = override.metalness;
+    }
+
+    if (override.roughness !== undefined) {
+      replacement.roughness = override.roughness;
+    }
+  }
+
+  replacement.needsUpdate = true;
+
+  return replacement;
+};
+
+const replaceFinishMaterials = ({
+  object,
+  materialOverrides,
+}: {
+  object: Object3D;
+  materialOverrides: AppleDeviceFinishMaterialOverride[];
+}) => {
+  const replacements = new Map<Material, Material>();
+  const materialOverrideMap = new Map<
+    string,
+    AppleDeviceFinishMaterialOverride
+  >();
+
+  materialOverrides.forEach((override) => {
+    override.materialNames.forEach((materialName) => {
+      materialOverrideMap.set(materialName, override);
+    });
+  });
+
+  object.traverse((child) => {
+    const mesh = child as Mesh;
+
+    if (!mesh.isMesh || !mesh.material) {
+      return;
+    }
+
+    const resolveMaterial = (material: Material) => {
+      const override = materialOverrideMap.get(material.name);
+
+      if (!override) {
+        return material;
+      }
+
+      const cachedReplacement = replacements.get(material);
+
+      if (cachedReplacement) {
+        return cachedReplacement;
+      }
+
+      const replacement = replaceFinishMaterial(material, override);
+      replacements.set(material, replacement);
+
+      return replacement;
+    };
+
+    mesh.material = Array.isArray(mesh.material)
+      ? mesh.material.map(resolveMaterial)
+      : resolveMaterial(mesh.material);
+  });
+};
+
+const getDeviceFinishConfig = (
+  deviceId: AppleDeviceId,
+  finish: AppleDeviceFinish | undefined,
+) => {
+  if (!finish || finish === "default") {
+    return undefined;
+  }
+
+  return DEVICE_FINISH_CONFIGS[deviceId]?.[finish];
+};
+
 const LoadedDeviceModel = ({
   assetPath,
+  finishConfig,
   fitTo,
   screenMaterialConfig,
   screenTexture,
 }: {
   assetPath: string;
+  finishConfig?: AppleDeviceFinishMaterialOverride[];
   fitTo?: number;
   screenMaterialConfig?: ScreenMaterialConfig;
   screenTexture?: Texture;
@@ -207,6 +362,13 @@ const LoadedDeviceModel = ({
   const { scene, offset, scale } = useMemo(() => {
     const clonedScene = gltf.scene.clone(true);
     markShadowReceivers(clonedScene);
+
+    if (finishConfig) {
+      replaceFinishMaterials({
+        object: clonedScene,
+        materialOverrides: finishConfig,
+      });
+    }
 
     if (screenTexture && screenMaterialConfig) {
       replaceScreenMaterials({
@@ -222,18 +384,20 @@ const LoadedDeviceModel = ({
       scene: clonedScene,
       ...transform,
     };
-  }, [fitTo, gltf.scene, screenMaterialConfig, screenTexture]);
+  }, [finishConfig, fitTo, gltf.scene, screenMaterialConfig, screenTexture]);
 
   return <primitive object={scene} position={offset} scale={scale} />;
 };
 
 const LoadedDeviceModelWithScreen = ({
   assetPath,
+  finishConfig,
   fitTo,
   screenMaterialConfig,
   screenTexturePath,
 }: {
   assetPath: string;
+  finishConfig?: AppleDeviceFinishMaterialOverride[];
   fitTo?: number;
   screenMaterialConfig: ScreenMaterialConfig;
   screenTexturePath: string;
@@ -250,6 +414,7 @@ const LoadedDeviceModelWithScreen = ({
   return (
     <LoadedDeviceModel
       assetPath={assetPath}
+      finishConfig={finishConfig}
       fitTo={fitTo}
       screenMaterialConfig={screenMaterialConfig}
       screenTexture={screenTexture}
@@ -259,6 +424,7 @@ const LoadedDeviceModelWithScreen = ({
 
 export const AppleDeviceModel = ({
   deviceId,
+  finish,
   fitTo,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
@@ -267,18 +433,24 @@ export const AppleDeviceModel = ({
 }: AppleDeviceModelProps) => {
   const model = getAppleDeviceModel(deviceId);
   const screenMaterialConfig = DEVICE_SCREEN_MATERIAL_CONFIGS[deviceId];
+  const finishConfig = getDeviceFinishConfig(deviceId, finish);
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {screenTexturePath ? (
         <LoadedDeviceModelWithScreen
           assetPath={model.assetPath}
+          finishConfig={finishConfig}
           fitTo={fitTo}
           screenMaterialConfig={screenMaterialConfig}
           screenTexturePath={screenTexturePath}
         />
       ) : (
-        <LoadedDeviceModel assetPath={model.assetPath} fitTo={fitTo} />
+        <LoadedDeviceModel
+          assetPath={model.assetPath}
+          finishConfig={finishConfig}
+          fitTo={fitTo}
+        />
       )}
     </group>
   );
