@@ -9,11 +9,8 @@ import {
 import { AppleDeviceModel } from "../../components/devices";
 import type { AppleDeviceId } from "../../assets/devices/appleDeviceModels";
 import {
-  DataFlowLine,
   SaaSCard3D,
   StudioStage,
-  SuccessBadge3D,
-  TapRipple3D,
   clampEase,
   mix,
   mixVector3,
@@ -45,79 +42,55 @@ type ScreenPlacement = {
   texturePath: string;
 };
 
-type CarouselDeviceProps = {
+type PresentedDeviceProps = {
   frame: number;
-  phase: number;
   deviceId: AppleDeviceId;
   fitTo: number;
-  baseY: number;
-  home: [number, number, number];
-  orbit: [number, number, number];
-  yawBase?: number;
+  from: [number, number, number];
+  target: [number, number, number];
+  finalRotation: [number, number, number];
+  startFrame: number;
+  durationInFrames: number;
   baseScale?: number;
   modelRotation?: [number, number, number];
   screen: ScreenPlacement;
-  delay: number;
+  spinTurns?: number;
 };
 
-const carouselPose = (
-  frame: number,
-  phase: number,
-  home: [number, number, number],
-  orbit: [number, number, number],
-  yawBase = 0,
-) => {
-  const spin = ((frame - 40) / SKEDEZ_DEVICE_SHOWCASE_DURATION) * Math.PI * 2;
-  const angle = spin + phase;
-  const slide = Math.sin(angle);
-  const depth = Math.cos(angle);
-  const lift = Math.sin(angle * 2) * orbit[1];
-  const x = home[0] + slide * orbit[0];
-  const y = home[1] + lift;
-  const z = home[2] + depth * orbit[2];
-  const yaw = yawBase - slide * 0.14;
-  const pitch = mix(0.035, -0.02, (depth + 1) / 2);
-  const scale = mix(0.96, 1.04, (depth + 1) / 2);
-
-  return {
-    position: [x, y, z] as [number, number, number],
-    rotation: [pitch, yaw, 0] as [number, number, number],
-    scale,
-  };
-};
-
-const CarouselDevice = ({
+const PresentedDevice = ({
   frame,
-  phase,
   deviceId,
   fitTo,
-  baseY,
-  home,
-  orbit,
-  yawBase,
+  from,
+  target,
+  finalRotation,
+  startFrame,
+  durationInFrames,
   baseScale = 1,
   modelRotation = [0, 0, 0],
   screen,
-  delay,
-}: CarouselDeviceProps) => {
-  const pose = carouselPose(frame, phase, home, orbit, yawBase);
-  const enter = revealProgress(frame, delay, 46);
-  const position: [number, number, number] = [
-    pose.position[0],
-    pose.position[1] + baseY,
-    pose.position[2],
-  ];
+  spinTurns = 1,
+}: PresentedDeviceProps) => {
+  const enter = revealProgress(frame, startFrame, durationInFrames);
+  const position = mixVector3(from, target, enter);
+  const lift = Math.sin(enter * Math.PI) * 0.34;
+  const spin = (1 - enter) * spinTurns * Math.PI * 2;
   const rotation: [number, number, number] = [
-    pose.rotation[0],
-    pose.rotation[1],
-    pose.rotation[2],
+    finalRotation[0] + (1 - enter) * 0.22,
+    finalRotation[1] + spin,
+    finalRotation[2] + (1 - enter) * 0.18,
   ];
+  const idleFloat =
+    frame > startFrame + durationInFrames
+      ? Math.sin((frame - startFrame) / 42) * 0.025
+      : 0;
+  const scale = baseScale * mix(0.72, 1, enter);
 
   return (
     <group
-      position={position}
+      position={[position[0], position[1] + lift + idleFloat, position[2]]}
       rotation={rotation}
-      scale={pose.scale * baseScale * enter}
+      scale={scale}
     >
       <AppleDeviceModel
         deviceId={deviceId}
@@ -148,7 +121,7 @@ const WorkflowCard = ({
   metric?: string;
   slot: WorkflowCardSlot;
 }) => {
-  const delay = 104 + index * 16;
+  const delay = 176 + index * 12;
   const enter = revealProgress(frame, delay, 42);
   const position = mixVector3(slot.from, slot.target, enter);
   const holdFloat = Math.sin((frame + index * 18) / 34) * 0.045 * enter;
@@ -177,79 +150,58 @@ const Stage = ({ frame }: { frame: number }) => (
     <group
       position={[0, 0.18, 0]}
       rotation={[
-        ease(frame, [0, 300], [-0.05, 0.04]),
-        ease(frame, [0, 300], [0.12, -0.12]),
+        ease(frame, [0, 300], [-0.03, 0.025]),
+        ease(frame, [0, 300], [0.04, -0.04]),
         0,
       ]}
-      scale={0.6}
+      scale={0.62}
     >
-      <CarouselDevice
-        baseY={-0.18}
-        delay={0}
-        deviceId="macbook-pro-m3-16-2024"
-        fitTo={3.46}
-        frame={frame}
-        home={[0, -0.18, 0.14]}
-        modelRotation={[0.14, 0, 0]}
-        orbit={[0.18, 0.03, 0.14]}
-        phase={Math.PI / 2}
-        screen={{
-          texturePath: "assets/skedez/dashboard.png",
-        }}
-      />
-      <CarouselDevice
-        baseY={0.04}
-        baseScale={0.96}
-        delay={8}
-        deviceId="iphone-17-pro-max"
-        fitTo={1.78}
-        frame={frame}
-        home={[1.72, 0.12, 0.48]}
-        modelRotation={[0, Math.PI / 2, 0]}
-        orbit={[0.2, 0.035, 0.16]}
-        phase={Math.PI / 2 - (Math.PI * 2) / 3}
-        yawBase={-0.08}
-        screen={{
-          texturePath: "assets/skedez/appointments-management.png",
-        }}
-      />
-      <CarouselDevice
-        baseY={0.02}
+      <PresentedDevice
         baseScale={0.98}
-        delay={16}
         deviceId="ipad-pro-13-m4-silver"
-        fitTo={1.96}
+        durationInFrames={64}
+        finalRotation={[0.01, 0.08, -0.06]}
+        fitTo={1.92}
         frame={frame}
-        home={[-1.72, 0.1, 0.46]}
-        orbit={[0.2, 0.035, 0.15]}
-        phase={Math.PI / 2 + (Math.PI * 2) / 3}
-        yawBase={0.08}
+        from={[-4.35, 0.82, 0.62]}
+        spinTurns={1.2}
+        startFrame={6}
+        target={[-1.78, 0.06, 0.42]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
         }}
       />
-      <DataFlowLine
-        color={colors.green}
-        control={[0, 0.56, 1.18]}
+      <PresentedDevice
+        baseScale={0.96}
+        deviceId="iphone-17-pro-max"
+        durationInFrames={64}
+        finalRotation={[0.02, -0.08, 0.06]}
+        fitTo={1.78}
         frame={frame}
-        from={[-1.8, 0.24, 1.08]}
-        pulseColor="#ffffff"
-        to={[1.8, 0.24, 1.08]}
+        modelRotation={[0, Math.PI / 2, 0]}
+        from={[5.55, 0.92, 0.62]}
+        spinTurns={1.35}
+        startFrame={54}
+        target={[1.78, 0.14, 0.46]}
+        screen={{
+          texturePath: "assets/skedez/appointments-management.png",
+        }}
       />
-      <TapRipple3D
-        color={colors.blue}
+      <PresentedDevice
+        baseScale={1}
+        deviceId="macbook-pro-m3-16-2024"
+        durationInFrames={74}
+        finalRotation={[0.01, 0, 0]}
+        fitTo={3.42}
         frame={frame}
-        position={[1.52, 0.38, 1.24]}
-        rotation={[0.05, -0.36, -0.08]}
-        startFrame={116}
-      />
-      <SuccessBadge3D
-        accent={colors.green}
-        frame={frame}
-        label="Booked"
-        position={[0.7, 2.02, 0.82]}
-        rotation={[0.04, -0.12, 0.02]}
-        startFrame={154}
+        from={[0, -3.15, -1.45]}
+        modelRotation={[0.14, 0, 0]}
+        spinTurns={0.82}
+        startFrame={106}
+        target={[0, -0.34, 0.16]}
+        screen={{
+          texturePath: "assets/skedez/dashboard.png",
+        }}
       />
       <WorkflowCard
         accent={colors.green}
@@ -257,8 +209,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={0}
         metric="+24%"
         slot={{
-          from: [-3.34, 2.18, 0.42],
-          target: [-2.5, 2.16, 0.62],
+          from: [-3.3, 2.42, 0.42],
+          target: [-2.42, 2.36, 0.58],
           rotation: [0.08, 0.28, -0.05],
         }}
         subtitle="24/7 online scheduling"
@@ -270,8 +222,8 @@ const Stage = ({ frame }: { frame: number }) => (
         frame={frame}
         index={1}
         slot={{
-          from: [2.72, 2.46, 0.0],
-          target: [0.68, 2.48, -0.04],
+          from: [3.0, 2.58, 0.0],
+          target: [0.56, 2.58, -0.06],
           rotation: [0.06, -0.26, 0.04],
         }}
         subtitle="Email + WhatsApp"
@@ -283,8 +235,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={2}
         metric="12 synced"
         slot={{
-          from: [3.5, 2.08, 0.5],
-          target: [2.56, 2.04, 0.62],
+          from: [3.5, 2.24, 0.5],
+          target: [2.42, 2.28, 0.58],
           rotation: [0.07, -0.32, 0.02],
         }}
         subtitle="Google Calendar sync"
@@ -296,9 +248,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={3}
         metric="-31%"
         slot={{
-          from: [-0.28, 3.1, -0.34],
-          target: [-0.72, 2.74, -0.2],
-          rotation: [0.08, 0.02, -0.02],
+          from: [-0.8, -2.02, 1.14],
+          target: [-0.16, -1.68, 1.16],
+          rotation: [-0.08, 0.08, 0.02],
         }}
         subtitle="No-shows and revenue"
         title="Analytics"
@@ -339,10 +291,10 @@ const BrandOverlay = () => (
 );
 
 export const SkedEzDeviceShowcase = () => {
-  const frame = useCurrentFrame() + 40;
+  const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const cameraZ = ease(frame, [0, 120], [9.6, 8.4]);
-  const cameraY = ease(frame, [0, 300], [1.06, 0.96]);
+  const cameraZ = ease(frame, [0, 170], [9.8, 8.35]);
+  const cameraY = ease(frame, [0, 300], [1.08, 0.96]);
 
   return (
     <AbsoluteFill
