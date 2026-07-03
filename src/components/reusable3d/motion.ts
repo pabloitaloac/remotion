@@ -57,6 +57,19 @@ export const orbitPoint = ({
   center[2] + Math.sin(angle) * radiusZ,
 ];
 
+export const mix = (from: number, to: number, progress: number) =>
+  from + (to - from) * progress;
+
+export const mixVector3 = (
+  from: Vector3Tuple,
+  to: Vector3Tuple,
+  progress: number,
+): Vector3Tuple => [
+  mix(from[0], to[0], progress),
+  mix(from[1], to[1], progress),
+  mix(from[2], to[2], progress),
+];
+
 export const pulseLoop = (
   frame: number,
   durationInFrames: number,

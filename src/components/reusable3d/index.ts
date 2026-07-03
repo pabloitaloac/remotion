@@ -5,6 +5,8 @@ export { StudioStage } from "./StudioStage";
 export { SuccessBadge3D, TapRipple3D } from "./InteractionEffects";
 export {
   clampEase,
+  mix,
+  mixVector3,
   orbitPoint,
   popProgress,
   pulseLoop,
