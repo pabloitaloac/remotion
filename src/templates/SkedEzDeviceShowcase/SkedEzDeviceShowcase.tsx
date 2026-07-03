@@ -1,4 +1,6 @@
+import { RoundedBox } from "@react-three/drei";
 import { ThreeCanvas } from "@remotion/three";
+import { useMemo } from "react";
 import {
   AbsoluteFill,
   Img,
@@ -6,6 +8,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { CanvasTexture, DoubleSide, SRGBColorSpace } from "three";
 import { AppleDeviceModel } from "../../components/devices";
 import type { AppleDeviceId } from "../../assets/devices/appleDeviceModels";
 import {
@@ -38,8 +41,18 @@ type WorkflowCardSlot = {
   rotation: [number, number, number];
 };
 
+type BrandPanelSlot = WorkflowCardSlot;
+
 type ScreenPlacement = {
   texturePath: string;
+};
+
+type BrandPanelTextureOptions = {
+  title: string;
+  subtitle: string;
+  tag?: string;
+  accent: string;
+  dark?: boolean;
 };
 
 type PresentedDeviceProps = {
@@ -143,9 +156,204 @@ const WorkflowCard = ({
   );
 };
 
+const createSkedEzBrandTexture = ({
+  title,
+  subtitle,
+  tag,
+  accent,
+  dark = false,
+}: BrandPanelTextureOptions) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 960;
+  canvas.height = 360;
+  const context = canvas.getContext("2d");
+  const texture = new CanvasTexture(canvas);
+
+  texture.colorSpace = SRGBColorSpace;
+  texture.anisotropy = 8;
+
+  if (!context) {
+    return texture;
+  }
+
+  const background = dark ? colors.black : colors.white;
+  const foreground = dark ? colors.white : colors.black;
+  const muted = dark ? "rgba(255,255,255,0.64)" : colors.muted;
+  const border = dark ? "rgba(255,255,255,0.14)" : colors.line;
+  const panel = dark ? "rgba(255,255,255,0.1)" : colors.panel;
+
+  context.fillStyle = background;
+  context.beginPath();
+  context.roundRect(0, 0, canvas.width, canvas.height, 72);
+  context.fill();
+
+  context.strokeStyle = border;
+  context.lineWidth = 8;
+  context.stroke();
+
+  context.fillStyle = accent;
+  context.beginPath();
+  context.roundRect(58, 74, 126, 126, 34);
+  context.fill();
+
+  context.fillStyle = "#ffffff";
+  context.fillRect(88, 108, 66, 12);
+  context.fillRect(88, 138, 66, 12);
+  context.fillRect(88, 168, 42, 12);
+  context.fillRect(142, 168, 12, 12);
+
+  context.fillStyle = foreground;
+  context.font = "900 88px Arial, Helvetica, sans-serif";
+  context.fillText(title, 222, 136);
+
+  context.fillStyle = muted;
+  context.font = "700 44px Arial, Helvetica, sans-serif";
+  context.fillText(subtitle, 224, 204);
+
+  context.fillStyle = panel;
+  context.beginPath();
+  context.roundRect(222, 250, tag ? 430 : 312, 58, 28);
+  context.fill();
+
+  context.fillStyle = accent;
+  context.beginPath();
+  context.roundRect(252, 271, 126, 16, 8);
+  context.fill();
+
+  context.fillStyle = dark ? "rgba(255,255,255,0.4)" : "#c9c9c9";
+  context.beginPath();
+  context.roundRect(406, 271, 176, 16, 8);
+  context.fill();
+
+  if (tag) {
+    context.fillStyle = accent;
+    context.beginPath();
+    context.roundRect(694, 78, 188, 62, 31);
+    context.fill();
+
+    context.fillStyle = "#ffffff";
+    context.font = "900 32px Arial, Helvetica, sans-serif";
+    context.textAlign = "center";
+    context.fillText(tag, 788, 119);
+    context.textAlign = "left";
+  }
+
+  texture.needsUpdate = true;
+
+  return texture;
+};
+
+const BrandPanel3D = ({
+  frame,
+  title,
+  subtitle,
+  tag,
+  accent,
+  dark,
+  delay,
+  slot,
+  width,
+  height,
+}: {
+  frame: number;
+  title: string;
+  subtitle: string;
+  tag?: string;
+  accent: string;
+  dark?: boolean;
+  delay: number;
+  slot: BrandPanelSlot;
+  width: number;
+  height: number;
+}) => {
+  const texture = useMemo(
+    () => createSkedEzBrandTexture({ title, subtitle, tag, accent, dark }),
+    [accent, dark, subtitle, tag, title],
+  );
+  const enter = revealProgress(frame, delay, 42);
+  const position = mixVector3(slot.from, slot.target, enter);
+  const holdFloat = Math.sin((frame + delay) / 38) * 0.035 * enter;
+
+  return (
+    <group
+      position={[position[0], position[1] + holdFloat, position[2]]}
+      rotation={slot.rotation}
+      scale={enter * mix(0.82, 1, enter)}
+    >
+      <RoundedBox args={[width, height, 0.045]} radius={0.08} smoothness={8}>
+        <meshStandardMaterial
+          color={dark ? colors.black : colors.white}
+          metalness={0.04}
+          roughness={0.34}
+        />
+      </RoundedBox>
+      <mesh position={[0, 0, 0.028]}>
+        <planeGeometry args={[width * 0.96, height * 0.9]} />
+        <meshBasicMaterial
+          map={texture}
+          side={DoubleSide}
+          transparent
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
+  );
+};
+
+const SkedEzBranding3D = ({ frame }: { frame: number }) => (
+  <>
+    <BrandPanel3D
+      accent={colors.green}
+      delay={148}
+      frame={frame}
+      height={0.52}
+      slot={{
+        from: [0, 4.36, 0.7],
+        target: [0, 3.86, 0.92],
+        rotation: [0.04, 0, 0],
+      }}
+      subtitle="Smart scheduling for service teams"
+      tag="PLATFORM"
+      title="SkedEz"
+      width={1.76}
+    />
+    <BrandPanel3D
+      accent={colors.green}
+      delay={202}
+      frame={frame}
+      height={0.44}
+      slot={{
+        from: [-4.34, 1.6, 0.9],
+        target: [-3.02, 1.52, 1.22],
+        rotation: [0.04, 0.24, -0.04],
+      }}
+      subtitle="Booking flow"
+      tag="24/7"
+      title="Online"
+      width={1.24}
+    />
+    <BrandPanel3D
+      accent={colors.blue}
+      dark
+      delay={214}
+      frame={frame}
+      height={0.44}
+      slot={{
+        from: [4.34, 1.58, 0.9],
+        target: [3.02, 1.52, 1.22],
+        rotation: [0.04, -0.24, 0.04],
+      }}
+      subtitle="WhatsApp ready"
+      tag="AUTO"
+      title="Remind"
+      width={1.24}
+    />
+  </>
+);
+
 const Stage = ({ frame }: { frame: number }) => (
   <>
-    <StudioStage />
+    <StudioStage showFloor={false} showGrid={false} />
 
     <group
       position={[0, 0.18, 0]}
@@ -256,6 +464,7 @@ const Stage = ({ frame }: { frame: number }) => (
         subtitle="No-shows and revenue"
         title="Analytics"
       />
+      <SkedEzBranding3D frame={frame} />
     </group>
   </>
 );

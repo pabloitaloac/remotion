@@ -6,6 +6,7 @@ type StudioStageProps = {
   sectionColor?: string;
   floorSize?: number;
   floorY?: number;
+  showFloor?: boolean;
   showGrid?: boolean;
   material?: MeshStandardMaterialParameters;
 };
@@ -16,6 +17,7 @@ export const StudioStage = ({
   sectionColor = "#e0e0e0",
   floorSize = 9,
   floorY = -1.12,
+  showFloor = true,
   showGrid = true,
   material,
 }: StudioStageProps) => (
@@ -29,15 +31,21 @@ export const StudioStage = ({
       shadow-mapSize-width={2048}
     />
     <pointLight color="#ffffff" intensity={28} position={[2.8, 2.4, 2.2]} />
-    <mesh
-      receiveShadow
-      position={[0, floorY, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
-    >
-      <planeGeometry args={[floorSize, floorSize, 24, 24]} />
-      <meshStandardMaterial color={floorColor} roughness={0.62} {...material} />
-    </mesh>
-    {showGrid ? (
+    {showFloor ? (
+      <mesh
+        receiveShadow
+        position={[0, floorY, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <planeGeometry args={[floorSize, floorSize, 24, 24]} />
+        <meshStandardMaterial
+          color={floorColor}
+          roughness={0.62}
+          {...material}
+        />
+      </mesh>
+    ) : null}
+    {showFloor && showGrid ? (
       <gridHelper
         args={[floorSize, 18, sectionColor, gridColor]}
         position={[0, floorY + 0.005, 0]}
