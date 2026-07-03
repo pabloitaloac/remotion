@@ -324,9 +324,9 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.52}
       slot={{
-        from: [0, 4.58, 0.7],
-        target: [0, 4.06, 0.92],
-        rotation: [0.04, 0, 0],
+        from: [0, 4.68, 0.7],
+        target: [0, 4.12, 1],
+        rotation: [0.03, 0, 0],
       }}
       subtitle="Smart scheduling for service teams"
       tag="PLATFORM"
@@ -339,9 +339,9 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.44}
       slot={{
-        from: [-4.1, 1.54, 0.9],
-        target: [-2.82, 1.42, 1.22],
-        rotation: [0.04, 0.24, -0.04],
+        from: [-3.92, 1.7, 0.9],
+        target: [-2.82, 1.56, 1.22],
+        rotation: [0.04, 0.14, -0.035],
       }}
       subtitle="Booking flow"
       tag="24/7"
@@ -355,9 +355,9 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.44}
       slot={{
-        from: [4.1, 1.54, 0.9],
-        target: [2.82, 1.42, 1.22],
-        rotation: [0.04, -0.24, 0.04],
+        from: [3.92, 1.7, 0.9],
+        target: [2.82, 1.56, 1.22],
+        rotation: [0.04, -0.14, 0.035],
       }}
       subtitle="WhatsApp ready"
       tag="AUTO"
@@ -372,13 +372,13 @@ const Stage = ({ frame }: { frame: number }) => (
     <StudioStage showFloor={false} showGrid={false} />
 
     <group
-      position={[0, 0.02, 0]}
+      position={[0, -0.02, 0]}
       rotation={[
         ease(frame, [0, 300], [-0.03, 0.025]),
         ease(frame, [0, 300], [0.04, -0.04]),
         0,
       ]}
-      scale={0.6}
+      scale={0.58}
     >
       <PresentedDevice
         baseScale={0.98}
@@ -394,7 +394,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={-36}
-        target={[-2.42, 0.08, 0.52]}
+        target={[-2.82, 0.08, 0.52]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
         }}
@@ -413,7 +413,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={-18}
-        target={[2.42, 0.12, 0.56]}
+        target={[2.82, 0.08, 0.56]}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
         }}
@@ -432,7 +432,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={6}
-        target={[0, -0.48, 0.16]}
+        target={[0, -0.56, 0.16]}
         screen={{
           texturePath: "assets/skedez/dashboard.png",
         }}
@@ -443,9 +443,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={0}
         metric="+24%"
         slot={{
-          from: [-3.24, 2.98, 0.82],
-          target: [-2.36, 2.82, 1],
-          rotation: [0.06, 0.2, -0.05],
+          from: [-3.5, 3.4, 0.82],
+          target: [-2.82, 3.14, 1],
+          rotation: [0.04, 0.16, -0.04],
         }}
         subtitle="24/7 online scheduling"
         title="Bookings"
@@ -456,9 +456,9 @@ const Stage = ({ frame }: { frame: number }) => (
         frame={frame}
         index={1}
         slot={{
-          from: [0, 3.56, 0.74],
-          target: [0, 3.16, 0.84],
-          rotation: [0.05, 0, 0.03],
+          from: [0, 3.72, 0.74],
+          target: [0, 3.14, 0.96],
+          rotation: [0.04, 0, 0],
         }}
         subtitle="Email + WhatsApp"
         title="Reminders"
@@ -469,9 +469,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={2}
         metric="12 synced"
         slot={{
-          from: [3.24, 2.98, 0.82],
-          target: [2.36, 2.82, 1],
-          rotation: [0.06, -0.2, 0.05],
+          from: [3.5, 3.4, 0.82],
+          target: [2.82, 3.14, 1],
+          rotation: [0.04, -0.16, 0.04],
         }}
         subtitle="Google Calendar sync"
         title="Calendar"
@@ -482,8 +482,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={3}
         metric="-31%"
         slot={{
-          from: [0, -2.86, 1.58],
-          target: [0, -2.48, 1.68],
+          from: [0, -3.02, 1.58],
+          target: [0, -2.64, 1.68],
           rotation: [-0.08, 0, 0],
         }}
         subtitle="No-shows and revenue"
