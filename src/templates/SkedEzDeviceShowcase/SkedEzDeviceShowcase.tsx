@@ -60,6 +60,7 @@ type PresentedDeviceProps = {
   deviceId: AppleDeviceId;
   fitTo: number;
   from: [number, number, number];
+  arcControl: [number, number, number];
   target: [number, number, number];
   finalRotation: [number, number, number];
   startFrame: number;
@@ -68,6 +69,7 @@ type PresentedDeviceProps = {
   modelRotation?: [number, number, number];
   screen: ScreenPlacement;
   spinTurns?: number;
+  pathTiming?: "fast" | "smooth";
 };
 
 const PresentedDevice = ({
@@ -75,6 +77,7 @@ const PresentedDevice = ({
   deviceId,
   fitTo,
   from,
+  arcControl,
   target,
   finalRotation,
   startFrame,
@@ -83,10 +86,16 @@ const PresentedDevice = ({
   modelRotation = [0, 0, 0],
   screen,
   spinTurns = 1,
+  pathTiming = "fast",
 }: PresentedDeviceProps) => {
-  const enter = revealProgress(frame, startFrame, durationInFrames);
-  const position = mixVector3(from, target, enter);
-  const lift = Math.sin(enter * Math.PI) * 0.34;
+  const enter =
+    pathTiming === "smooth"
+      ? ease(frame, [startFrame, startFrame + durationInFrames], [0, 1])
+      : revealProgress(frame, startFrame, durationInFrames);
+  const curveStart = mixVector3(from, arcControl, enter);
+  const curveEnd = mixVector3(arcControl, target, enter);
+  const position = mixVector3(curveStart, curveEnd, enter);
+  const lift = Math.sin(enter * Math.PI) * 0.2;
   const spin = (1 - enter) * spinTurns * Math.PI * 2;
   const rotation: [number, number, number] = [
     finalRotation[0] + (1 - enter) * 0.22,
@@ -97,7 +106,7 @@ const PresentedDevice = ({
     frame > startFrame + durationInFrames
       ? Math.sin((frame - startFrame) / 42) * 0.025
       : 0;
-  const scale = baseScale * mix(0.72, 1, enter);
+  const scale = frame < startFrame ? 0 : baseScale * mix(0.72, 1, enter);
 
   return (
     <group
@@ -372,8 +381,9 @@ const Stage = ({ frame }: { frame: number }) => (
         fitTo={1.62}
         frame={frame}
         modelRotation={[0, -Math.PI / 2, 0]}
-        from={[-4.35, 0.82, 0.62]}
-        spinTurns={1.2}
+        from={[-7.85, 1.04, 0.32]}
+        arcControl={[-5.04, 3.02, 1.14]}
+        spinTurns={1.34}
         startFrame={6}
         target={[-2.58, 0.1, 0.52]}
         screen={{
@@ -388,8 +398,9 @@ const Stage = ({ frame }: { frame: number }) => (
         fitTo={1.58}
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
-        from={[5.55, 0.92, 0.62]}
-        spinTurns={1.35}
+        from={[7.9, 1.04, 0.36]}
+        arcControl={[5.1, 3.0, 1.18]}
+        spinTurns={1.46}
         startFrame={54}
         target={[2.58, 0.14, 0.56]}
         screen={{
@@ -403,9 +414,11 @@ const Stage = ({ frame }: { frame: number }) => (
         finalRotation={[0.01, 0, 0]}
         fitTo={3.16}
         frame={frame}
-        from={[0, -3.15, -1.45]}
+        from={[0, -14.2, -1.35]}
+        arcControl={[0, -5.76, 2.08]}
         modelRotation={[0.14, 0, 0]}
-        spinTurns={0.82}
+        pathTiming="smooth"
+        spinTurns={1.02}
         startFrame={106}
         target={[0, -0.34, 0.16]}
         screen={{
