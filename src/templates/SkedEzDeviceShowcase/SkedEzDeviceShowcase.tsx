@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import {
   AbsoluteFill,
   Img,
+  Easing,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
@@ -93,9 +94,15 @@ const PresentedDevice = ({
   spinTurns = 1,
   pathTiming = "fast",
 }: PresentedDeviceProps) => {
+  const smoothProgress = ease(
+    frame,
+    [startFrame, startFrame + durationInFrames],
+    [0, 1],
+    Easing.bezier(0.18, 0.9, 0.22, 1),
+  );
   const enter =
     pathTiming === "smooth"
-      ? ease(frame, [startFrame, startFrame + durationInFrames], [0, 1])
+      ? smoothProgress
       : pathTiming === "linear"
         ? Math.min(1, Math.max(0, (frame - startFrame) / durationInFrames))
         : revealProgress(frame, startFrame, durationInFrames);
@@ -105,18 +112,31 @@ const PresentedDevice = ({
   const firstArc = mixVector3(curveStart, curveMiddle, enter);
   const secondArc = mixVector3(curveMiddle, curveEnd, enter);
   const position = mixVector3(firstArc, secondArc, enter);
-  const lift = Math.sin(enter * Math.PI) * 0.2;
+  const travel = Math.sin(enter * Math.PI);
+  const lift = travel * 0.24;
   const spin = (1 - enter) * spinTurns * Math.PI * 2;
+  const travelDirection = Math.sign(target[0] - from[0]) || 1;
+  const idleMotion = revealProgress(
+    frame,
+    startFrame + durationInFrames - 8,
+    28,
+  );
+  const idleYaw = Math.sin((frame - startFrame) / 58) * 0.018 * idleMotion;
+  const idleRoll = Math.cos((frame - startFrame) / 64) * 0.012 * idleMotion;
   const rotation: [number, number, number] = [
-    finalRotation[0] + (1 - enter) * 0.22,
-    finalRotation[1] + spin,
-    finalRotation[2] + (1 - enter) * 0.18,
+    finalRotation[0] + (1 - enter) * 0.22 + travel * 0.08,
+    finalRotation[1] + spin + idleYaw,
+    finalRotation[2] +
+      (1 - enter) * 0.18 -
+      travelDirection * travel * 0.12 +
+      idleRoll,
   ];
   const idleFloat =
     frame > startFrame + durationInFrames
       ? Math.sin((frame - startFrame) / 42) * 0.025
       : 0;
-  const scale = frame < startFrame ? 0 : baseScale * mix(0.72, 1, enter);
+  const scale =
+    frame < startFrame ? 0 : baseScale * (mix(0.68, 1, enter) + travel * 0.045);
 
   return (
     <group
@@ -154,10 +174,12 @@ const WorkflowCard = ({
   metric?: string;
   slot: WorkflowCardSlot;
 }) => {
-  const delay = 88 + index * 8;
+  const delay = 76 + index * 5;
   const enter = revealProgress(frame, delay, 42);
   const position = mixVector3(slot.from, slot.target, enter);
   const holdFloat = Math.sin((frame + index * 18) / 34) * 0.045 * enter;
+  const parallaxZ = Math.cos((frame + index * 22) / 42) * 0.035 * enter;
+  const sway = Math.sin((frame + index * 25) / 48) * 0.018 * enter;
 
   return (
     <SaaSCard3D
@@ -167,8 +189,12 @@ const WorkflowCard = ({
       frame={frame}
       height={0.78}
       metric={metric}
-      position={[position[0], position[1] + holdFloat, position[2]]}
-      rotation={slot.rotation}
+      position={[position[0], position[1] + holdFloat, position[2] + parallaxZ]}
+      rotation={[
+        slot.rotation[0] + sway * 0.4,
+        slot.rotation[1] + sway,
+        slot.rotation[2] + sway * 0.5,
+      ]}
       subtitle={subtitle}
       title={title}
       width={1.34}
@@ -293,12 +319,18 @@ const BrandPanel3D = ({
   const enter = revealProgress(frame, delay, 42);
   const position = mixVector3(slot.from, slot.target, enter);
   const holdFloat = Math.sin((frame + delay) / 38) * 0.035 * enter;
+  const parallaxZ = Math.cos((frame + delay) / 46) * 0.026 * enter;
+  const sway = Math.sin((frame + delay) / 52) * 0.014 * enter;
 
   return (
     <group
-      position={[position[0], position[1] + holdFloat, position[2]]}
-      rotation={slot.rotation}
-      scale={enter * mix(0.82, 1, enter)}
+      position={[position[0], position[1] + holdFloat, position[2] + parallaxZ]}
+      rotation={[
+        slot.rotation[0] + sway * 0.35,
+        slot.rotation[1] + sway,
+        slot.rotation[2] + sway * 0.45,
+      ]}
+      scale={enter * (mix(0.82, 1, enter) + Math.sin(enter * Math.PI) * 0.035)}
     >
       <RoundedBox args={[width, height, 0.045]} radius={0.08} smoothness={8}>
         <meshStandardMaterial
@@ -324,7 +356,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
   <>
     <BrandPanel3D
       accent={colors.green}
-      delay={84}
+      delay={74}
       frame={frame}
       height={0.52}
       slot={{
@@ -339,7 +371,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
     />
     <BrandPanel3D
       accent={colors.green}
-      delay={96}
+      delay={82}
       frame={frame}
       height={0.44}
       slot={{
@@ -355,7 +387,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
     <BrandPanel3D
       accent={colors.blue}
       dark
-      delay={104}
+      delay={88}
       frame={frame}
       height={0.44}
       slot={{
@@ -371,133 +403,150 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
   </>
 );
 
-const Stage = ({ frame }: { frame: number }) => (
-  <>
-    <StudioStage showFloor={false} showGrid={false} />
+const Stage = ({ frame }: { frame: number }) => {
+  const stageSettle = ease(
+    frame,
+    [0, 124],
+    [0, 1],
+    Easing.bezier(0.16, 1, 0.3, 1),
+  );
+  const stageDrift = revealProgress(frame, 82, 48);
+  const stageScale =
+    mix(0.54, 0.58, stageSettle) + Math.sin(frame / 118) * 0.005 * stageDrift;
+  const stageY =
+    mix(0.1, -0.02, stageSettle) + Math.sin(frame / 92) * 0.018 * stageDrift;
+  const stageZ = mix(-0.08, 0.04, stageSettle);
+  const stageYaw =
+    ease(frame, [0, 300], [0.045, -0.045]) +
+    Math.sin(frame / 96) * 0.012 * stageDrift;
+  const stagePitch =
+    ease(frame, [0, 300], [-0.035, 0.025]) +
+    Math.cos(frame / 110) * 0.006 * stageDrift;
 
-    <group
-      position={[0, -0.02, 0]}
-      rotation={[
-        ease(frame, [0, 300], [-0.03, 0.025]),
-        ease(frame, [0, 300], [0.04, -0.04]),
-        0,
-      ]}
-      scale={0.58}
-    >
-      <PresentedDevice
-        baseScale={0.98}
-        deviceId="ipad-pro-13-m4-silver"
-        durationInFrames={70}
-        finalRotation={[0.01, 0.03, -0.04]}
-        fitTo={1.62}
-        frame={frame}
-        modelRotation={[0, -Math.PI / 2, 0]}
-        from={[5.6, -10.2, 7.52]}
-        arcControl={[6.7, -6.4, 7.08]}
-        depthControl={[-4.6, -1.9, 3.18]}
-        pathTiming="smooth"
-        spinTurns={1.32}
-        startFrame={-36}
-        target={[-2.82, 0.08, 0.52]}
-        screen={{
-          texturePath: "assets/skedez/smart-calendar.png",
-        }}
-      />
-      <PresentedDevice
-        baseScale={0.96}
-        deviceId="iphone-17-pro-max"
-        durationInFrames={70}
-        finalRotation={[0.02, -0.08, 0.06]}
-        fitTo={1.58}
-        finish="deep-blue"
-        frame={frame}
-        modelRotation={[0, Math.PI / 2, 0]}
-        from={[-4.8, 8.4, 7.52]}
-        arcControl={[-6.2, 6.3, 7.08]}
-        depthControl={[4.2, 3.2, 3.18]}
-        pathTiming="smooth"
-        spinTurns={1.32}
-        startFrame={-18}
-        target={[2.82, 0.08, 0.56]}
-        screen={{
-          texturePath: "assets/skedez/appointments-management.png",
-        }}
-      />
-      <PresentedDevice
-        baseScale={1}
-        deviceId="macbook-pro-m3-16-2024"
-        durationInFrames={70}
-        finalRotation={[0.01, 0, 0]}
-        fitTo={3.16}
-        frame={frame}
-        from={[2.2, -10.8, 7.42]}
-        arcControl={[5.62, -6.72, 7.06]}
-        depthControl={[1.78, -2.52, 3.18]}
-        modelRotation={[0.14, 0, 0]}
-        pathTiming="smooth"
-        spinTurns={1.32}
-        startFrame={6}
-        target={[0, -0.56, 0.16]}
-        screen={{
-          texturePath: "assets/skedez/dashboard.png",
-        }}
-      />
-      <WorkflowCard
-        accent={colors.green}
-        frame={frame}
-        index={0}
-        metric="+24%"
-        slot={{
-          from: [-3.5, 3.4, 0.82],
-          target: [-2.82, 3.14, 1],
-          rotation: [0.04, 0.16, -0.04],
-        }}
-        subtitle="24/7 online scheduling"
-        title="Bookings"
-      />
-      <WorkflowCard
-        accent={colors.black}
-        dark
-        frame={frame}
-        index={1}
-        slot={{
-          from: [0, 3.72, 0.74],
-          target: [0, 3.14, 0.96],
-          rotation: [0.04, 0, 0],
-        }}
-        subtitle="Email + WhatsApp"
-        title="Reminders"
-      />
-      <WorkflowCard
-        accent={colors.blue}
-        frame={frame}
-        index={2}
-        metric="12 synced"
-        slot={{
-          from: [3.5, 3.4, 0.82],
-          target: [2.82, 3.14, 1],
-          rotation: [0.04, -0.16, 0.04],
-        }}
-        subtitle="Google Calendar sync"
-        title="Calendar"
-      />
-      <WorkflowCard
-        accent={colors.green}
-        frame={frame}
-        index={3}
-        metric="-31%"
-        slot={{
-          from: [0, -3.02, 1.58],
-          target: [0, -2.64, 1.68],
-          rotation: [-0.08, 0, 0],
-        }}
-        subtitle="No-shows and revenue"
-        title="Analytics"
-      />
-      <SkedEzBranding3D frame={frame} />
-    </group>
-  </>
-);
+  return (
+    <>
+      <StudioStage showFloor={false} showGrid={false} />
+
+      <group
+        position={[0, stageY, stageZ]}
+        rotation={[stagePitch, stageYaw, 0]}
+        scale={stageScale}
+      >
+        <PresentedDevice
+          baseScale={0.98}
+          deviceId="ipad-pro-13-m4-silver"
+          durationInFrames={70}
+          finalRotation={[0.01, 0.03, -0.04]}
+          fitTo={1.62}
+          frame={frame}
+          modelRotation={[0, -Math.PI / 2, 0]}
+          from={[5.6, -10.2, 7.52]}
+          arcControl={[6.7, -6.4, 7.08]}
+          depthControl={[-4.6, -1.9, 3.18]}
+          pathTiming="smooth"
+          spinTurns={1.32}
+          startFrame={-36}
+          target={[-2.82, 0.08, 0.52]}
+          screen={{
+            texturePath: "assets/skedez/smart-calendar.png",
+          }}
+        />
+        <PresentedDevice
+          baseScale={0.96}
+          deviceId="iphone-17-pro-max"
+          durationInFrames={70}
+          finalRotation={[0.02, -0.08, 0.06]}
+          fitTo={1.58}
+          finish="deep-blue"
+          frame={frame}
+          modelRotation={[0, Math.PI / 2, 0]}
+          from={[-4.8, 8.4, 7.52]}
+          arcControl={[-6.2, 6.3, 7.08]}
+          depthControl={[4.2, 3.2, 3.18]}
+          pathTiming="smooth"
+          spinTurns={1.32}
+          startFrame={-18}
+          target={[2.82, 0.08, 0.56]}
+          screen={{
+            texturePath: "assets/skedez/appointments-management.png",
+          }}
+        />
+        <PresentedDevice
+          baseScale={1}
+          deviceId="macbook-pro-m3-16-2024"
+          durationInFrames={70}
+          finalRotation={[0.01, 0, 0]}
+          fitTo={3.16}
+          frame={frame}
+          from={[2.2, -10.8, 7.42]}
+          arcControl={[5.62, -6.72, 7.06]}
+          depthControl={[1.78, -2.52, 3.18]}
+          modelRotation={[0.14, 0, 0]}
+          pathTiming="smooth"
+          spinTurns={1.32}
+          startFrame={6}
+          target={[0, -0.56, 0.16]}
+          screen={{
+            texturePath: "assets/skedez/dashboard.png",
+          }}
+        />
+        <WorkflowCard
+          accent={colors.green}
+          frame={frame}
+          index={0}
+          metric="+24%"
+          slot={{
+            from: [-3.5, 3.4, 0.82],
+            target: [-2.82, 3.14, 1],
+            rotation: [0.04, 0.16, -0.04],
+          }}
+          subtitle="24/7 online scheduling"
+          title="Bookings"
+        />
+        <WorkflowCard
+          accent={colors.black}
+          dark
+          frame={frame}
+          index={1}
+          slot={{
+            from: [0, 3.72, 0.74],
+            target: [0, 3.14, 0.96],
+            rotation: [0.04, 0, 0],
+          }}
+          subtitle="Email + WhatsApp"
+          title="Reminders"
+        />
+        <WorkflowCard
+          accent={colors.blue}
+          frame={frame}
+          index={2}
+          metric="12 synced"
+          slot={{
+            from: [3.5, 3.4, 0.82],
+            target: [2.82, 3.14, 1],
+            rotation: [0.04, -0.16, 0.04],
+          }}
+          subtitle="Google Calendar sync"
+          title="Calendar"
+        />
+        <WorkflowCard
+          accent={colors.green}
+          frame={frame}
+          index={3}
+          metric="-31%"
+          slot={{
+            from: [0, -3.02, 1.58],
+            target: [0, -2.64, 1.68],
+            rotation: [-0.08, 0, 0],
+          }}
+          subtitle="No-shows and revenue"
+          title="Analytics"
+        />
+        <SkedEzBranding3D frame={frame} />
+      </group>
+    </>
+  );
+};
 
 const BrandOverlay = ({ frame }: { frame: number }) => {
   const enter = revealProgress(frame, 0, 34);
@@ -554,8 +603,14 @@ const BrandOverlay = ({ frame }: { frame: number }) => {
 export const SkedEzDeviceShowcase = () => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
-  const cameraZ = ease(frame, [0, 170], [9.8, 8.35]);
-  const cameraY = ease(frame, [0, 300], [1.08, 0.96]);
+  const cameraDrift = revealProgress(frame, 64, 54);
+  const cameraX = Math.sin(frame / 112) * 0.12 * cameraDrift;
+  const cameraZ =
+    ease(frame, [0, 170], [9.8, 8.35]) +
+    Math.sin(frame / 136) * 0.07 * cameraDrift;
+  const cameraY =
+    ease(frame, [0, 300], [1.08, 0.96]) +
+    Math.cos(frame / 104) * 0.025 * cameraDrift;
 
   return (
     <AbsoluteFill
@@ -568,7 +623,7 @@ export const SkedEzDeviceShowcase = () => {
       <ThreeCanvas
         camera={{
           fov: 42,
-          position: [0, cameraY, cameraZ],
+          position: [cameraX, cameraY, cameraZ],
         }}
         gl={{
           antialias: true,
