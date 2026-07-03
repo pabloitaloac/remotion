@@ -10,7 +10,6 @@ import { AppleDeviceModel } from "../../components/devices";
 import type { AppleDeviceId } from "../../assets/devices/appleDeviceModels";
 import {
   DataFlowLine,
-  DeviceScreenContent3D,
   SaaSCard3D,
   StudioStage,
   SuccessBadge3D,
@@ -44,11 +43,6 @@ type WorkflowCardSlot = {
 
 type ScreenPlacement = {
   texturePath: string;
-  width: number;
-  height: number;
-  position: [number, number, number];
-  rotation?: [number, number, number];
-  accent: string;
 };
 
 type CarouselDeviceProps = {
@@ -108,7 +102,6 @@ const CarouselDevice = ({
 }: CarouselDeviceProps) => {
   const pose = carouselPose(frame, phase, home, orbit, yawBase);
   const enter = revealProgress(frame, delay, 46);
-  const screenRotation = screen.rotation ?? [0, 0, 0];
   const position: [number, number, number] = [
     pose.position[0],
     pose.position[1] + baseY,
@@ -130,20 +123,7 @@ const CarouselDevice = ({
         deviceId={deviceId}
         fitTo={fitTo}
         rotation={modelRotation}
-      />
-      <DeviceScreenContent3D
-        accent={screen.accent}
-        delay={delay + 12}
-        frame={frame}
-        height={screen.height}
-        position={screen.position}
-        rotation={[
-          screenRotation[0] - rotation[0],
-          screenRotation[1] - rotation[1],
-          screenRotation[2] - rotation[2],
-        ]}
-        texturePath={screen.texturePath}
-        width={screen.width}
+        screenTexturePath={screen.texturePath}
       />
     </group>
   );
@@ -215,11 +195,6 @@ const Stage = ({ frame }: { frame: number }) => (
         phase={Math.PI / 2}
         screen={{
           texturePath: "assets/skedez/dashboard.png",
-          width: 1.44,
-          height: 0.82,
-          position: [0, 0.68, 0.87],
-          rotation: [-0.04, 0, 0],
-          accent: colors.green,
         }}
       />
       <CarouselDevice
@@ -236,10 +211,6 @@ const Stage = ({ frame }: { frame: number }) => (
         yawBase={-0.08}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
-          width: 0.62,
-          height: 1.24,
-          position: [0, 0.02, 0.1],
-          accent: colors.blue,
         }}
       />
       <CarouselDevice
@@ -255,10 +226,6 @@ const Stage = ({ frame }: { frame: number }) => (
         yawBase={0.08}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
-          width: 1.04,
-          height: 1.38,
-          position: [0, 0.04, 0.12],
-          accent: colors.green,
         }}
       />
       <DataFlowLine
