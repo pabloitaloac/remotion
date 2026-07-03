@@ -111,13 +111,12 @@ const MacBook = ({ frame }: { frame: number }) => {
 
   return (
     <group
-      position={[0, -0.06 + settle, 0]}
+      position={[0, -0.16 + settle, -0.1]}
       rotation={[0.03, ease(frame, [0, 300], [-0.24, 0.18]), 0]}
     >
       <AppleDeviceModel
         deviceId="macbook-pro-m3-16-2024"
-        fitTo={5.2}
-        placeholderSize={[5.2, 0.38, 3.2]}
+        fitTo={4.35}
         rotation={[open, 0, 0]}
       />
     </group>
@@ -128,19 +127,15 @@ const IPhone = ({ frame }: { frame: number }) => {
   const orbit = ease(frame, [56, 188], [-1.2, 0.36]);
   const lift = ease(frame, [56, 140], [-0.7, 0.28]);
   const finalTurn = ease(frame, [210, 300], [0, -0.28]);
-  const x = Math.cos(orbit) * 2.35;
-  const z = Math.sin(orbit) * 1.2 + 0.55;
+  const x = Math.cos(orbit) * 2.16;
+  const z = Math.sin(orbit) * 1.04 + 0.5;
 
   return (
     <group
       position={[x, lift, z]}
       rotation={[0.1, -0.58 + finalTurn - orbit * 0.18, -0.13]}
     >
-      <AppleDeviceModel
-        deviceId="iphone-17-pro-max"
-        fitTo={2.82}
-        placeholderSize={[1.34, 2.78, 0.16]}
-      />
+      <AppleDeviceModel deviceId="iphone-17-pro-max" fitTo={2.42} />
     </group>
   );
 };
@@ -152,15 +147,11 @@ const IPad = ({ frame }: { frame: number }) => {
 
   return (
     <group
-      position={[-2.25, -0.04 + drift, 0.88]}
-      rotation={[0.06, 0.42 + rotate, 0.1]}
+      position={[-1.42, 0.12 + drift, 0.48]}
+      rotation={[0.04, -0.12 + rotate, -0.1]}
       scale={reveal}
     >
-      <AppleDeviceModel
-        deviceId="ipad-pro-13-m4-silver"
-        fitTo={3.35}
-        placeholderSize={[2.34, 3.28, 0.16]}
-      />
+      <AppleDeviceModel deviceId="ipad-pro-13-m4-silver" fitTo={2.52} />
     </group>
   );
 };
