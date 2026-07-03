@@ -1,5 +1,6 @@
 export { DataFlowLine } from "./DataFlowLine";
 export { DeviceScreen3D } from "./DeviceScreen3D";
+export { DeviceScreenContent3D } from "./DeviceScreenContent3D";
 export { SaaSCard3D } from "./SaaSCard3D";
 export { StudioStage } from "./StudioStage";
 export { SuccessBadge3D, TapRipple3D } from "./InteractionEffects";
