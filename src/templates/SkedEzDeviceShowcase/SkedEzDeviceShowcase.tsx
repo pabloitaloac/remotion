@@ -383,16 +383,16 @@ const Stage = ({ frame }: { frame: number }) => (
       <PresentedDevice
         baseScale={0.98}
         deviceId="ipad-pro-13-m4-silver"
-        durationInFrames={64}
+        durationInFrames={58}
         finalRotation={[0.01, 0.03, -0.04]}
         fitTo={1.62}
         frame={frame}
         modelRotation={[0, -Math.PI / 2, 0]}
-        from={[8.9, -1.02, 4.9]}
-        arcControl={[5.8, 4.9, 4.42]}
-        depthControl={[-5.2, 3.28, 2.26]}
-        spinTurns={1.62}
-        startFrame={6}
+        from={[9.8, -2.0, 7.65]}
+        arcControl={[6.35, 5.38, 7.2]}
+        depthControl={[-5.48, 3.62, 3.34]}
+        spinTurns={1.72}
+        startFrame={0}
         target={[-2.58, 0.1, 0.52]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
@@ -401,17 +401,17 @@ const Stage = ({ frame }: { frame: number }) => (
       <PresentedDevice
         baseScale={0.96}
         deviceId="iphone-17-pro-max"
-        durationInFrames={64}
+        durationInFrames={58}
         finalRotation={[0.02, -0.08, 0.06]}
         fitTo={1.58}
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
-        from={[-6.7, -0.9, 4.9]}
-        arcControl={[-3.62, 4.64, 4.48]}
-        depthControl={[4.92, 3.1, 2.28]}
+        from={[-5.52, -1.76, 7.72]}
+        arcControl={[-2.7, 5.08, 7.18]}
+        depthControl={[5.08, 3.42, 3.34]}
         pathTiming="linear"
-        spinTurns={1.72}
-        startFrame={54}
+        spinTurns={1.88}
+        startFrame={18}
         target={[2.58, 0.14, 0.56]}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
@@ -420,17 +420,17 @@ const Stage = ({ frame }: { frame: number }) => (
       <PresentedDevice
         baseScale={1}
         deviceId="macbook-pro-m3-16-2024"
-        durationInFrames={74}
+        durationInFrames={70}
         finalRotation={[0.01, 0, 0]}
         fitTo={3.16}
         frame={frame}
-        from={[1.2, -12.4, 5.18]}
-        arcControl={[4.7, -7.9, 5.08]}
-        depthControl={[1.38, -2.34, 2.46]}
+        from={[2.2, -10.8, 7.42]}
+        arcControl={[5.62, -6.72, 7.06]}
+        depthControl={[1.78, -2.52, 3.18]}
         modelRotation={[0.14, 0, 0]}
         pathTiming="smooth"
-        spinTurns={1.18}
-        startFrame={106}
+        spinTurns={1.32}
+        startFrame={42}
         target={[0, -0.34, 0.16]}
         screen={{
           texturePath: "assets/skedez/dashboard.png",
