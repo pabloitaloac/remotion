@@ -324,8 +324,8 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.52}
       slot={{
-        from: [0, 4.36, 0.7],
-        target: [0, 3.86, 0.92],
+        from: [0, 4.58, 0.7],
+        target: [0, 4.06, 0.92],
         rotation: [0.04, 0, 0],
       }}
       subtitle="Smart scheduling for service teams"
@@ -339,8 +339,8 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.44}
       slot={{
-        from: [-4.34, 1.6, 0.9],
-        target: [-3.02, 1.52, 1.22],
+        from: [-4.1, 1.54, 0.9],
+        target: [-2.82, 1.42, 1.22],
         rotation: [0.04, 0.24, -0.04],
       }}
       subtitle="Booking flow"
@@ -355,8 +355,8 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
       frame={frame}
       height={0.44}
       slot={{
-        from: [4.34, 1.58, 0.9],
-        target: [3.02, 1.52, 1.22],
+        from: [4.1, 1.54, 0.9],
+        target: [2.82, 1.42, 1.22],
         rotation: [0.04, -0.24, 0.04],
       }}
       subtitle="WhatsApp ready"
@@ -372,13 +372,13 @@ const Stage = ({ frame }: { frame: number }) => (
     <StudioStage showFloor={false} showGrid={false} />
 
     <group
-      position={[0, 0.18, 0]}
+      position={[0, 0.02, 0]}
       rotation={[
         ease(frame, [0, 300], [-0.03, 0.025]),
         ease(frame, [0, 300], [0.04, -0.04]),
         0,
       ]}
-      scale={0.56}
+      scale={0.6}
     >
       <PresentedDevice
         baseScale={0.98}
@@ -394,7 +394,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={-36}
-        target={[-2.58, 0.1, 0.52]}
+        target={[-2.42, 0.08, 0.52]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
         }}
@@ -413,7 +413,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={-18}
-        target={[2.58, 0.14, 0.56]}
+        target={[2.42, 0.12, 0.56]}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
         }}
@@ -432,7 +432,7 @@ const Stage = ({ frame }: { frame: number }) => (
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={6}
-        target={[0, -0.34, 0.16]}
+        target={[0, -0.48, 0.16]}
         screen={{
           texturePath: "assets/skedez/dashboard.png",
         }}
@@ -443,8 +443,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={0}
         metric="+24%"
         slot={{
-          from: [-3.45, 2.84, 0.82],
-          target: [-2.54, 2.7, 1],
+          from: [-3.24, 2.98, 0.82],
+          target: [-2.36, 2.82, 1],
           rotation: [0.06, 0.2, -0.05],
         }}
         subtitle="24/7 online scheduling"
@@ -456,8 +456,8 @@ const Stage = ({ frame }: { frame: number }) => (
         frame={frame}
         index={1}
         slot={{
-          from: [0, 3.36, 0.74],
-          target: [0, 2.96, 0.84],
+          from: [0, 3.56, 0.74],
+          target: [0, 3.16, 0.84],
           rotation: [0.05, 0, 0.03],
         }}
         subtitle="Email + WhatsApp"
@@ -469,8 +469,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={2}
         metric="12 synced"
         slot={{
-          from: [3.45, 2.84, 0.82],
-          target: [2.54, 2.7, 1],
+          from: [3.24, 2.98, 0.82],
+          target: [2.36, 2.82, 1],
           rotation: [0.06, -0.2, 0.05],
         }}
         subtitle="Google Calendar sync"
@@ -482,8 +482,8 @@ const Stage = ({ frame }: { frame: number }) => (
         index={3}
         metric="-31%"
         slot={{
-          from: [0, -2.52, 1.58],
-          target: [0, -2.12, 1.68],
+          from: [0, -2.86, 1.58],
+          target: [0, -2.48, 1.68],
           rotation: [-0.08, 0, 0],
         }}
         subtitle="No-shows and revenue"
@@ -494,36 +494,57 @@ const Stage = ({ frame }: { frame: number }) => (
   </>
 );
 
-const BrandOverlay = () => (
-  <AbsoluteFill style={{ pointerEvents: "none" }}>
-    <div
-      style={{
-        position: "absolute",
-        left: 64,
-        top: 58,
-        display: "flex",
-        alignItems: "center",
-        gap: 18,
-      }}
-    >
-      <Img
-        src={staticFile("assets/skedez/icon.png")}
-        style={{ height: 42, width: 42 }}
-      />
+const BrandOverlay = ({ frame }: { frame: number }) => {
+  const enter = revealProgress(frame, 0, 34);
+  const settle = revealProgress(frame, 34, 24);
+  const idle = Math.sin(frame / 42) * 0.012 * settle;
+  const iconTurn = mix(-0.18, 0, enter) + Math.sin(frame / 36) * 0.015 * settle;
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none" }}>
       <div
         style={{
-          color: colors.black,
-          fontFamily: "Arial, Helvetica, sans-serif",
-          fontSize: 38,
-          fontWeight: 900,
-          lineHeight: 1,
+          position: "absolute",
+          left: 58,
+          top: 48,
+          display: "flex",
+          alignItems: "center",
+          gap: 18,
+          opacity: enter,
+          transform: `translateY(${mix(-18, 0, enter)}px) scale(${
+            mix(0.88, 1, enter) + idle
+          })`,
+          transformOrigin: "left center",
         }}
       >
-        SkedEz
+        <Img
+          src={staticFile("assets/skedez/icon.png")}
+          style={{
+            filter: `drop-shadow(0 ${mix(12, 4, enter)}px ${mix(
+              18,
+              10,
+              enter,
+            )}px rgba(0,0,0,${mix(0, 0.14, enter)}))`,
+            height: 46,
+            transform: `rotate(${iconTurn}rad)`,
+            width: 46,
+          }}
+        />
+        <div
+          style={{
+            color: colors.black,
+            fontFamily: "Arial, Helvetica, sans-serif",
+            fontSize: 40,
+            fontWeight: 900,
+            lineHeight: 1,
+          }}
+        >
+          SkedEz
+        </div>
       </div>
-    </div>
-  </AbsoluteFill>
-);
+    </AbsoluteFill>
+  );
+};
 
 export const SkedEzDeviceShowcase = () => {
   const frame = useCurrentFrame();
@@ -554,7 +575,7 @@ export const SkedEzDeviceShowcase = () => {
       >
         <Stage frame={frame} />
       </ThreeCanvas>
-      <BrandOverlay />
+      <BrandOverlay frame={frame} />
     </AbsoluteFill>
   );
 };
