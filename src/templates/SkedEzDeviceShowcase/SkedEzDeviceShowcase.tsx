@@ -1,16 +1,20 @@
 import { ThreeCanvas } from "@remotion/three";
-import { useMemo } from "react";
-import { CanvasTexture, DoubleSide, SRGBColorSpace } from "three";
 import {
   AbsoluteFill,
-  Easing,
   Img,
-  interpolate,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { AppleDeviceModel } from "../../components/devices";
+import {
+  DataFlowLine,
+  SaaSCard3D,
+  StudioStage,
+  SuccessBadge3D,
+  TapRipple3D,
+  clampEase,
+} from "../../components/reusable3d";
 
 export const SKEDEZ_DEVICE_SHOWCASE_DURATION = 300;
 
@@ -25,85 +29,7 @@ const colors = {
   white: "#ffffff",
 };
 
-type LabelTextureOptions = {
-  title: string;
-  subtitle: string;
-  accent: string;
-  dark?: boolean;
-};
-
-const ease = (
-  frame: number,
-  input: [number, number],
-  output: [number, number],
-) =>
-  interpolate(frame, input, output, {
-    easing: Easing.inOut(Easing.cubic),
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-const useLabelTexture = ({
-  title,
-  subtitle,
-  accent,
-  dark = false,
-}: LabelTextureOptions) =>
-  useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 1024;
-    canvas.height = 512;
-
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-      return new CanvasTexture(canvas);
-    }
-
-    context.fillStyle = dark ? colors.black : colors.white;
-    context.beginPath();
-    context.roundRect(0, 0, 1024, 512, 72);
-    context.fill();
-
-    context.strokeStyle = dark ? "rgba(255,255,255,0.16)" : colors.line;
-    context.lineWidth = 8;
-    context.stroke();
-
-    context.fillStyle = accent;
-    context.beginPath();
-    context.roundRect(72, 72, 72, 72, 22);
-    context.fill();
-
-    context.fillStyle = dark ? colors.white : colors.black;
-    context.font = "900 92px Arial, Helvetica, sans-serif";
-    context.fillText(title, 184, 126);
-
-    context.fillStyle = dark ? "rgba(255,255,255,0.68)" : colors.muted;
-    context.font = "600 48px Arial, Helvetica, sans-serif";
-    context.fillText(subtitle, 184, 218);
-
-    context.fillStyle = dark ? "rgba(255,255,255,0.1)" : colors.panel;
-    context.beginPath();
-    context.roundRect(72, 304, 880, 86, 32);
-    context.fill();
-
-    context.fillStyle = accent;
-    context.beginPath();
-    context.roundRect(104, 334, 270, 26, 13);
-    context.fill();
-
-    context.fillStyle = dark ? "rgba(255,255,255,0.5)" : "#c4c4c4";
-    context.beginPath();
-    context.roundRect(408, 334, 210, 26, 13);
-    context.roundRect(650, 334, 168, 26, 13);
-    context.fill();
-
-    const texture = new CanvasTexture(canvas);
-    texture.colorSpace = SRGBColorSpace;
-    texture.anisotropy = 8;
-
-    return texture;
-  }, [accent, dark, subtitle, title]);
+const ease = clampEase;
 
 const MacBook = ({ frame }: { frame: number }) => {
   const open = ease(frame, [0, 72], [-0.04, 0.18]);
@@ -156,13 +82,14 @@ const IPad = ({ frame }: { frame: number }) => {
   );
 };
 
-const FloatingCard = ({
+const WorkflowCard = ({
   frame,
   index,
   title,
   subtitle,
   accent,
   dark,
+  metric,
 }: {
   frame: number;
   index: number;
@@ -170,41 +97,31 @@ const FloatingCard = ({
   subtitle: string;
   accent: string;
   dark?: boolean;
+  metric?: string;
 }) => {
-  const texture = useLabelTexture({ title, subtitle, accent, dark });
-  const reveal = ease(frame, [120 + index * 14, 164 + index * 14], [0, 1]);
   const orbit = frame / 62 + index * 1.48;
-  const radius = 2.95 + index * 0.1;
+  const radius = 2.44 + index * 0.05;
   const y = 1.1 + Math.sin(frame / 34 + index) * 0.18;
 
   return (
-    <mesh
+    <SaaSCard3D
+      accent={accent}
+      dark={dark}
+      delay={120 + index * 14}
+      frame={frame}
+      metric={metric}
       position={[Math.cos(orbit) * radius, y, Math.sin(orbit) * 1.36 - 0.2]}
       rotation={[0.08, -0.16, 0.02]}
-      scale={[reveal, reveal, reveal]}
-    >
-      <planeGeometry args={[1.72, 0.86]} />
-      <meshBasicMaterial
-        map={texture}
-        side={DoubleSide}
-        transparent
-        toneMapped={false}
-      />
-    </mesh>
+      subtitle={subtitle}
+      title={title}
+      width={1.58}
+    />
   );
 };
 
 const Stage = ({ frame }: { frame: number }) => (
   <>
-    <ambientLight intensity={1.25} />
-    <directionalLight
-      castShadow
-      intensity={2.2}
-      position={[-2, 5, 4]}
-      shadow-mapSize-height={2048}
-      shadow-mapSize-width={2048}
-    />
-    <pointLight color="#ffffff" intensity={28} position={[2.8, 2.4, 2.2]} />
+    <StudioStage />
 
     <group
       position={[0, 0.18, 0]}
@@ -215,29 +132,40 @@ const Stage = ({ frame }: { frame: number }) => (
       ]}
       scale={0.64}
     >
-      <mesh
-        receiveShadow
-        position={[0, -1.12, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <planeGeometry args={[9, 9, 24, 24]} />
-        <meshStandardMaterial color="#f6f6f6" roughness={0.62} />
-      </mesh>
-      <gridHelper
-        args={[9, 18, "#e0e0e0", "#eeeeee"]}
-        position={[0, -1.115, 0]}
-      />
       <MacBook frame={frame} />
       <IPhone frame={frame} />
       <IPad frame={frame} />
-      <FloatingCard
+      <DataFlowLine
+        color={colors.green}
+        control={[0.15, 1.78, 0.82]}
+        frame={frame}
+        from={[-1.18, 0.62, 0.54]}
+        to={[1.72, 0.58, 0.64]}
+      />
+      <TapRipple3D
+        color={colors.blue}
+        frame={frame}
+        position={[1.68, 0.62, 0.86]}
+        rotation={[0.1, -0.7, -0.12]}
+        startFrame={116}
+      />
+      <SuccessBadge3D
+        accent={colors.green}
+        frame={frame}
+        label="Booked"
+        position={[1.52, 1.45, 0.7]}
+        rotation={[0.04, -0.34, 0.02]}
+        startFrame={154}
+      />
+      <WorkflowCard
         accent={colors.green}
         frame={frame}
         index={0}
+        metric="+24%"
         subtitle="24/7 online scheduling"
         title="Bookings"
       />
-      <FloatingCard
+      <WorkflowCard
         accent={colors.black}
         dark
         frame={frame}
@@ -245,17 +173,19 @@ const Stage = ({ frame }: { frame: number }) => (
         subtitle="Email + WhatsApp"
         title="Reminders"
       />
-      <FloatingCard
+      <WorkflowCard
         accent={colors.blue}
         frame={frame}
         index={2}
+        metric="12 synced"
         subtitle="Google Calendar sync"
         title="Calendar"
       />
-      <FloatingCard
+      <WorkflowCard
         accent={colors.green}
         frame={frame}
         index={3}
+        metric="-31%"
         subtitle="No-shows and revenue"
         title="Analytics"
       />

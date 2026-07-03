@@ -10,6 +10,7 @@ This repo is the video factory. Websites such as `pabloitalo.com` should consume
 - React 19
 - TypeScript
 - Tailwind CSS v4
+- React Three Fiber + Drei
 - JSON-driven project inputs
 
 ## Install
@@ -88,6 +89,29 @@ public/assets/<group>/<project>/
 ```
 
 Reference them from compositions with Remotion's `staticFile()`.
+
+## Reusable 3D Kit
+
+Reusable SaaS/app animation primitives live in:
+
+```console
+src/components/reusable3d/
+```
+
+The kit includes:
+
+- `StudioStage` for lights, floor, and grid setup
+- `SaaSCard3D` for reusable floating feature/metric cards
+- `DeviceScreen3D` for screenshot panels
+- `DataFlowLine` for animated workflow paths
+- `TapRipple3D` and `SuccessBadge3D` for interaction moments
+- frame-driven motion helpers in `motion.ts`
+
+Preview the kit directly in Remotion Studio with:
+
+```console
+Reusable3DKitShowcase
+```
 
 ### Reusable Apple 3D Devices
 
