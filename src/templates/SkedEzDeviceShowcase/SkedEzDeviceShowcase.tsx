@@ -154,19 +154,20 @@ const Stage = ({ frame }: { frame: number }) => (
         ease(frame, [0, 300], [0.04, -0.04]),
         0,
       ]}
-      scale={0.62}
+      scale={0.56}
     >
       <PresentedDevice
         baseScale={0.98}
         deviceId="ipad-pro-13-m4-silver"
         durationInFrames={64}
-        finalRotation={[0.01, 0.08, -0.06]}
-        fitTo={1.92}
+        finalRotation={[0.01, 0.03, -0.04]}
+        fitTo={1.62}
         frame={frame}
+        modelRotation={[0, -Math.PI / 2, 0]}
         from={[-4.35, 0.82, 0.62]}
         spinTurns={1.2}
         startFrame={6}
-        target={[-1.78, 0.06, 0.42]}
+        target={[-2.58, 0.1, 0.52]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
         }}
@@ -176,13 +177,13 @@ const Stage = ({ frame }: { frame: number }) => (
         deviceId="iphone-17-pro-max"
         durationInFrames={64}
         finalRotation={[0.02, -0.08, 0.06]}
-        fitTo={1.78}
+        fitTo={1.58}
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
         from={[5.55, 0.92, 0.62]}
         spinTurns={1.35}
         startFrame={54}
-        target={[1.78, 0.14, 0.46]}
+        target={[2.58, 0.14, 0.56]}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
         }}
@@ -192,7 +193,7 @@ const Stage = ({ frame }: { frame: number }) => (
         deviceId="macbook-pro-m3-16-2024"
         durationInFrames={74}
         finalRotation={[0.01, 0, 0]}
-        fitTo={3.42}
+        fitTo={3.16}
         frame={frame}
         from={[0, -3.15, -1.45]}
         modelRotation={[0.14, 0, 0]}
@@ -209,9 +210,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={0}
         metric="+24%"
         slot={{
-          from: [-3.3, 2.42, 0.42],
-          target: [-2.42, 2.36, 0.58],
-          rotation: [0.08, 0.28, -0.05],
+          from: [-3.45, 2.84, 0.82],
+          target: [-2.54, 2.7, 1],
+          rotation: [0.06, 0.2, -0.05],
         }}
         subtitle="24/7 online scheduling"
         title="Bookings"
@@ -222,9 +223,9 @@ const Stage = ({ frame }: { frame: number }) => (
         frame={frame}
         index={1}
         slot={{
-          from: [3.0, 2.58, 0.0],
-          target: [0.56, 2.58, -0.06],
-          rotation: [0.06, -0.26, 0.04],
+          from: [0, 3.36, 0.74],
+          target: [0, 2.96, 0.84],
+          rotation: [0.05, 0, 0.03],
         }}
         subtitle="Email + WhatsApp"
         title="Reminders"
@@ -235,9 +236,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={2}
         metric="12 synced"
         slot={{
-          from: [3.5, 2.24, 0.5],
-          target: [2.42, 2.28, 0.58],
-          rotation: [0.07, -0.32, 0.02],
+          from: [3.45, 2.84, 0.82],
+          target: [2.54, 2.7, 1],
+          rotation: [0.06, -0.2, 0.05],
         }}
         subtitle="Google Calendar sync"
         title="Calendar"
@@ -248,9 +249,9 @@ const Stage = ({ frame }: { frame: number }) => (
         index={3}
         metric="-31%"
         slot={{
-          from: [-0.8, -2.02, 1.14],
-          target: [-0.16, -1.68, 1.16],
-          rotation: [-0.08, 0.08, 0.02],
+          from: [0, -2.52, 1.58],
+          target: [0, -2.12, 1.68],
+          rotation: [-0.08, 0, 0],
         }}
         subtitle="No-shows and revenue"
         title="Analytics"

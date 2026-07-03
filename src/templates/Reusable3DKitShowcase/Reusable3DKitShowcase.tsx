@@ -133,18 +133,19 @@ const KitScene = ({ frame }: { frame: number }) => {
   return (
     <>
       <StudioStage floorColor="#f7f7f7" floorSize={8.5} />
-      <group position={[0, 0, 0]} rotation={[0.02, turn, 0]} scale={0.64}>
+      <group position={[0, 0, 0]} rotation={[0.02, turn, 0]} scale={0.58}>
         <PresentedDevice
           baseScale={0.98}
           deviceId="ipad-pro-13-m4-silver"
           durationInFrames={58}
-          finalRotation={[0.01, 0.08, -0.06]}
-          fitTo={1.92}
+          finalRotation={[0.01, 0.03, -0.04]}
+          fitTo={1.62}
           frame={frame}
+          modelRotation={[0, -Math.PI / 2, 0]}
           from={[-4.3, 0.82, 0.62]}
           spinTurns={1.15}
           startFrame={0}
-          target={[-1.78, 0.06, 0.42]}
+          target={[-2.58, 0.1, 0.52]}
           screen={{
             texturePath: "assets/skedez/smart-calendar.png",
           }}
@@ -154,13 +155,13 @@ const KitScene = ({ frame }: { frame: number }) => {
           deviceId="iphone-17-pro-max"
           durationInFrames={58}
           finalRotation={[0.02, -0.08, 0.06]}
-          fitTo={1.78}
+          fitTo={1.58}
           frame={frame}
           modelRotation={[0, Math.PI / 2, 0]}
           from={[5.45, 0.9, 0.62]}
           spinTurns={1.3}
           startFrame={42}
-          target={[1.78, 0.14, 0.46]}
+          target={[2.58, 0.14, 0.56]}
           screen={{
             texturePath: "assets/skedez/appointments-management.png",
           }}
@@ -170,7 +171,7 @@ const KitScene = ({ frame }: { frame: number }) => {
           deviceId="macbook-pro-m3-16-2024"
           durationInFrames={66}
           finalRotation={[0.01, 0, 0]}
-          fitTo={3.46}
+          fitTo={3.16}
           frame={frame}
           from={[0, -3.1, -1.45]}
           modelRotation={[0.14, 0, 0]}
@@ -188,9 +189,9 @@ const KitScene = ({ frame }: { frame: number }) => {
           frame={frame}
           metric="+38%"
           slot={{
-            from: [-3.34, 2.38, 0.24],
-            target: [-2.42, 2.34, 0.32],
-            rotation: [0.08, 0.28, -0.05],
+            from: [-3.45, 2.8, 0.78],
+            target: [-2.54, 2.66, 0.96],
+            rotation: [0.06, 0.2, -0.05],
           }}
           subtitle="Online bookings"
           title="Growth"
@@ -201,9 +202,9 @@ const KitScene = ({ frame }: { frame: number }) => {
           delay={170}
           frame={frame}
           slot={{
-            from: [3.36, 2.42, 0.24],
-            target: [2.42, 2.34, 0.32],
-            rotation: [0.05, -0.34, 0.04],
+            from: [3.45, 2.8, 0.78],
+            target: [2.54, 2.66, 0.96],
+            rotation: [0.05, -0.2, 0.04],
           }}
           subtitle="Email + WhatsApp"
           title="Reminders"
@@ -214,9 +215,9 @@ const KitScene = ({ frame }: { frame: number }) => {
           frame={frame}
           metric="12 synced"
           slot={{
-            from: [-0.8, -1.96, 1.1],
-            target: [-0.16, -1.64, 1.14],
-            rotation: [-0.08, -0.05, 0],
+            from: [0, -2.18, 1.54],
+            target: [0, -1.72, 1.66],
+            rotation: [-0.08, 0, 0],
           }}
           subtitle="Calendar events"
           title="Sync"
