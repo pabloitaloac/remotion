@@ -34,6 +34,8 @@
     "build": "remotion bundle",
     "render:project": "node scripts/render-project.mjs",
     "render:all": "node scripts/render-all.mjs",
+    "assets:check": "node scripts/validate-device-assets.mjs",
+    "assets:download:devices": "node scripts/download-sketchfab-devices.mjs",
     "upgrade": "remotion upgrade",
     "lint": "eslint src scripts",
     "typecheck": "tsc",

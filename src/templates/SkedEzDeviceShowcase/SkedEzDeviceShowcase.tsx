@@ -1,12 +1,6 @@
 import { ThreeCanvas } from "@remotion/three";
-import { useLoader } from "@react-three/fiber";
 import { useMemo } from "react";
-import {
-  CanvasTexture,
-  DoubleSide,
-  SRGBColorSpace,
-  TextureLoader,
-} from "three";
+import { CanvasTexture, DoubleSide, SRGBColorSpace } from "three";
 import {
   AbsoluteFill,
   Easing,
@@ -16,6 +10,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { AppleDeviceModel } from "../../components/devices";
 
 export const SKEDEZ_DEVICE_SHOWCASE_DURATION = 300;
 
@@ -47,14 +42,6 @@ const ease = (
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-
-const useImageTexture = (path: string) => {
-  const texture = useLoader(TextureLoader, staticFile(path));
-  texture.colorSpace = SRGBColorSpace;
-  texture.anisotropy = 8;
-
-  return texture;
-};
 
 const useLabelTexture = ({
   title,
@@ -118,27 +105,6 @@ const useLabelTexture = ({
     return texture;
   }, [accent, dark, subtitle, title]);
 
-const ScreenPlane = ({
-  texturePath,
-  width,
-  height,
-  position,
-}: {
-  texturePath: string;
-  width: number;
-  height: number;
-  position: [number, number, number];
-}) => {
-  const texture = useImageTexture(texturePath);
-
-  return (
-    <mesh position={position}>
-      <planeGeometry args={[width, height]} />
-      <meshBasicMaterial map={texture} toneMapped={false} />
-    </mesh>
-  );
-};
-
 const MacBook = ({ frame }: { frame: number }) => {
   const open = ease(frame, [0, 72], [-0.04, 0.18]);
   const settle = Math.sin(frame / 24) * 0.018;
@@ -148,43 +114,12 @@ const MacBook = ({ frame }: { frame: number }) => {
       position={[0, -0.06 + settle, 0]}
       rotation={[0.03, ease(frame, [0, 300], [-0.24, 0.18]), 0]}
     >
-      <group rotation={[open, 0, 0]} position={[0, 0.82, -0.27]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[4.9, 0.16, 3.05]} />
-          <meshStandardMaterial
-            color="#0f0f0f"
-            metalness={0.72}
-            roughness={0.22}
-          />
-        </mesh>
-        <ScreenPlane
-          height={2.58}
-          position={[0, 0.095, 0.006]}
-          texturePath="assets/skedez/dashboard.png"
-          width={4.48}
-        />
-        <mesh position={[0, 0.096, 0.02]}>
-          <boxGeometry args={[4.95, 0.024, 0.08]} />
-          <meshStandardMaterial color="#030303" />
-        </mesh>
-      </group>
-
-      <mesh castShadow receiveShadow position={[0, -0.86, 0.62]}>
-        <boxGeometry args={[5.24, 0.18, 3.28]} />
-        <meshStandardMaterial
-          color="#d9d9d9"
-          metalness={0.78}
-          roughness={0.28}
-        />
-      </mesh>
-      <mesh receiveShadow position={[0, -0.75, 0.34]}>
-        <boxGeometry args={[2.08, 0.012, 1.04]} />
-        <meshStandardMaterial color="#bfbfbf" roughness={0.46} />
-      </mesh>
-      <mesh receiveShadow position={[0, -0.73, -0.82]}>
-        <boxGeometry args={[4.28, 0.015, 1.03]} />
-        <meshStandardMaterial color="#191919" roughness={0.38} />
-      </mesh>
+      <AppleDeviceModel
+        deviceId="macbook-pro-m3-16-2024"
+        fitTo={5.2}
+        placeholderSize={[5.2, 0.38, 3.2]}
+        rotation={[open, 0, 0]}
+      />
     </group>
   );
 };
@@ -201,24 +136,31 @@ const IPhone = ({ frame }: { frame: number }) => {
       position={[x, lift, z]}
       rotation={[0.1, -0.58 + finalTurn - orbit * 0.18, -0.13]}
     >
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[1.34, 2.78, 0.14]} />
-        <meshStandardMaterial
-          color="#0b0b0b"
-          metalness={0.82}
-          roughness={0.18}
-        />
-      </mesh>
-      <ScreenPlane
-        height={2.5}
-        position={[0, 0, 0.077]}
-        texturePath="assets/skedez/smart-calendar.png"
-        width={1.16}
+      <AppleDeviceModel
+        deviceId="iphone-17-pro-max"
+        fitTo={2.82}
+        placeholderSize={[1.34, 2.78, 0.16]}
       />
-      <mesh position={[0, 1.12, 0.09]}>
-        <boxGeometry args={[0.36, 0.08, 0.018]} />
-        <meshBasicMaterial color="#050505" />
-      </mesh>
+    </group>
+  );
+};
+
+const IPad = ({ frame }: { frame: number }) => {
+  const reveal = ease(frame, [78, 150], [0.12, 1]);
+  const drift = Math.sin(frame / 36) * 0.16;
+  const rotate = ease(frame, [80, 300], [0.34, -0.22]);
+
+  return (
+    <group
+      position={[-2.25, -0.04 + drift, 0.88]}
+      rotation={[0.06, 0.42 + rotate, 0.1]}
+      scale={reveal}
+    >
+      <AppleDeviceModel
+        deviceId="ipad-pro-13-m4-silver"
+        fitTo={3.35}
+        placeholderSize={[2.34, 3.28, 0.16]}
+      />
     </group>
   );
 };
@@ -296,6 +238,7 @@ const Stage = ({ frame }: { frame: number }) => (
       />
       <MacBook frame={frame} />
       <IPhone frame={frame} />
+      <IPad frame={frame} />
       <FloatingCard
         accent={colors.green}
         frame={frame}

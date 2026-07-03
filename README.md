@@ -89,6 +89,39 @@ public/assets/<group>/<project>/
 
 Reference them from compositions with Remotion's `staticFile()`.
 
+### Reusable Apple 3D Devices
+
+Real device models live under:
+
+```console
+public/assets/devices/apple/
+```
+
+The selected iPhone 17 Pro Max, MacBook Pro, and iPad Pro models are listed in:
+
+```console
+src/assets/devices/appleDeviceModels.json
+```
+
+They are Sketchfab Creative Commons Attribution models. Keep creator credit in:
+
+```console
+public/assets/devices/apple/ATTRIBUTION.md
+```
+
+Download the official model archives with a Sketchfab access token:
+
+```console
+SKETCHFAB_TOKEN=... npm run assets:download:devices
+npm run assets:check
+```
+
+Use them in Remotion scenes through:
+
+```tsx
+import { AppleDeviceModel } from "./components/devices";
+```
+
 ## Portfolio Integration
 
 After rendering, copy the MP4/WebM files into the target site, for example:

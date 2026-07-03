@@ -1,0 +1,1 @@
+export { AppleDeviceModel } from "./AppleDeviceModel";
