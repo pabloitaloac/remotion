@@ -150,7 +150,7 @@ const WorkflowCard = ({
   metric?: string;
   slot: WorkflowCardSlot;
 }) => {
-  const delay = 176 + index * 12;
+  const delay = 88 + index * 8;
   const enter = revealProgress(frame, delay, 42);
   const position = mixVector3(slot.from, slot.target, enter);
   const holdFloat = Math.sin((frame + index * 18) / 34) * 0.045 * enter;
@@ -320,7 +320,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
   <>
     <BrandPanel3D
       accent={colors.green}
-      delay={148}
+      delay={84}
       frame={frame}
       height={0.52}
       slot={{
@@ -335,7 +335,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
     />
     <BrandPanel3D
       accent={colors.green}
-      delay={202}
+      delay={96}
       frame={frame}
       height={0.44}
       slot={{
@@ -351,7 +351,7 @@ const SkedEzBranding3D = ({ frame }: { frame: number }) => (
     <BrandPanel3D
       accent={colors.blue}
       dark
-      delay={214}
+      delay={104}
       frame={frame}
       height={0.44}
       slot={{
@@ -407,9 +407,9 @@ const Stage = ({ frame }: { frame: number }) => (
         fitTo={1.58}
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
-        from={[-5.6, -10.2, 7.52]}
-        arcControl={[-6.7, -6.4, 7.08]}
-        depthControl={[4.6, -1.9, 3.18]}
+        from={[-4.8, 8.4, 7.52]}
+        arcControl={[-6.2, 6.3, 7.08]}
+        depthControl={[4.2, 3.2, 3.18]}
         pathTiming="smooth"
         spinTurns={1.32}
         startFrame={-18}
