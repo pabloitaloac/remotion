@@ -383,16 +383,17 @@ const Stage = ({ frame }: { frame: number }) => (
       <PresentedDevice
         baseScale={0.98}
         deviceId="ipad-pro-13-m4-silver"
-        durationInFrames={58}
+        durationInFrames={70}
         finalRotation={[0.01, 0.03, -0.04]}
         fitTo={1.62}
         frame={frame}
         modelRotation={[0, -Math.PI / 2, 0]}
-        from={[9.8, -2.0, 7.65]}
-        arcControl={[6.35, 5.38, 7.2]}
-        depthControl={[-5.48, 3.62, 3.34]}
-        spinTurns={1.72}
-        startFrame={0}
+        from={[5.6, -10.2, 7.52]}
+        arcControl={[6.7, -6.4, 7.08]}
+        depthControl={[-4.6, -1.9, 3.18]}
+        pathTiming="smooth"
+        spinTurns={1.32}
+        startFrame={-36}
         target={[-2.58, 0.1, 0.52]}
         screen={{
           texturePath: "assets/skedez/smart-calendar.png",
@@ -401,17 +402,17 @@ const Stage = ({ frame }: { frame: number }) => (
       <PresentedDevice
         baseScale={0.96}
         deviceId="iphone-17-pro-max"
-        durationInFrames={58}
+        durationInFrames={70}
         finalRotation={[0.02, -0.08, 0.06]}
         fitTo={1.58}
         frame={frame}
         modelRotation={[0, Math.PI / 2, 0]}
-        from={[-5.52, -1.76, 7.72]}
-        arcControl={[-2.7, 5.08, 7.18]}
-        depthControl={[5.08, 3.42, 3.34]}
-        pathTiming="linear"
-        spinTurns={1.88}
-        startFrame={18}
+        from={[-5.6, -10.2, 7.52]}
+        arcControl={[-6.7, -6.4, 7.08]}
+        depthControl={[4.6, -1.9, 3.18]}
+        pathTiming="smooth"
+        spinTurns={1.32}
+        startFrame={-18}
         target={[2.58, 0.14, 0.56]}
         screen={{
           texturePath: "assets/skedez/appointments-management.png",
@@ -430,7 +431,7 @@ const Stage = ({ frame }: { frame: number }) => (
         modelRotation={[0.14, 0, 0]}
         pathTiming="smooth"
         spinTurns={1.32}
-        startFrame={42}
+        startFrame={6}
         target={[0, -0.34, 0.16]}
         screen={{
           texturePath: "assets/skedez/dashboard.png",
