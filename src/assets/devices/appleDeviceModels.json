@@ -1,0 +1,50 @@
+[
+  {
+    "id": "iphone-17-pro-max",
+    "name": "iPhone 17 Pro Max",
+    "category": "phone",
+    "assetPath": "assets/devices/apple/iphone-17-pro-max/model.gltf",
+    "sketchfab": {
+      "uid": "87fc1df741384124a8ce0226d2b2058d",
+      "url": "https://sketchfab.com/3d-models/iphone-17-pro-max-87fc1df741384124a8ce0226d2b2058d",
+      "creator": "MajdyModels",
+      "license": "CC Attribution",
+      "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed.",
+      "faceCount": 29562,
+      "vertexCount": 16444
+    }
+  },
+  {
+    "id": "macbook-pro-m3-16-2024",
+    "name": "MacBook Pro M3 16 inch 2024",
+    "category": "laptop",
+    "assetPath": "assets/devices/apple/macbook-pro-m3-16-2024/model.gltf",
+    "sketchfab": {
+      "uid": "8e34fc2b303144f78490007d91ff57c4",
+      "url": "https://sketchfab.com/3d-models/macbook-pro-m3-16-inch-2024-8e34fc2b303144f78490007d91ff57c4",
+      "creator": "jackbaeten",
+      "license": "CC Attribution",
+      "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed.",
+      "faceCount": 112658,
+      "vertexCount": 78199
+    }
+  },
+  {
+    "id": "ipad-pro-13-m4-silver",
+    "name": "iPad Pro 13 inch silver M4",
+    "category": "tablet",
+    "assetPath": "assets/devices/apple/ipad-pro-13-m4-silver/model.gltf",
+    "sketchfab": {
+      "uid": "8a113340443e49d3b905ab9f0b45efd6",
+      "url": "https://sketchfab.com/3d-models/ipad-pro-13in-silver-m4-8a113340443e49d3b905ab9f0b45efd6",
+      "creator": "polyman Studio",
+      "license": "CC Attribution",
+      "licenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+      "requirements": "Author must be credited. Commercial use is allowed.",
+      "faceCount": 136864,
+      "vertexCount": 87918
+    }
+  }
+]

@@ -9,13 +9,18 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@remotion/cli": "4.0.484",
+    "@remotion/tailwind-v4": "4.0.484",
+    "@remotion/three": "^4.0.484",
+    "@types/three": "^0.185.0",
+    "execa": "9.6.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.484",
-    "@remotion/tailwind-v4": "4.0.484",
     "tailwindcss": "4.0.0",
-    "execa": "9.6.0"
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.484",
@@ -30,6 +35,8 @@
     "build": "remotion bundle",
     "render:project": "node scripts/render-project.mjs",
     "render:all": "node scripts/render-all.mjs",
+    "assets:check": "node scripts/validate-device-assets.mjs",
+    "assets:download:devices": "node scripts/download-sketchfab-devices.mjs",
     "upgrade": "remotion upgrade",
     "lint": "eslint src scripts",
     "typecheck": "tsc",

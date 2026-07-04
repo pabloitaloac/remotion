@@ -10,6 +10,7 @@ This repo is the video factory. Websites such as `pabloitalo.com` should consume
 - React 19
 - TypeScript
 - Tailwind CSS v4
+- React Three Fiber + Drei
 - JSON-driven project inputs
 
 ## Install
@@ -88,6 +89,62 @@ public/assets/<group>/<project>/
 ```
 
 Reference them from compositions with Remotion's `staticFile()`.
+
+## Reusable 3D Kit
+
+Reusable SaaS/app animation primitives live in:
+
+```console
+src/components/reusable3d/
+```
+
+The kit includes:
+
+- `StudioStage` for lights, floor, and grid setup
+- `SaaSCard3D` for reusable floating feature/metric cards
+- `DeviceScreen3D` for screenshot panels
+- `DataFlowLine` for animated workflow paths
+- `TapRipple3D` and `SuccessBadge3D` for interaction moments
+- frame-driven motion helpers in `motion.ts`
+
+Preview the kit directly in Remotion Studio with:
+
+```console
+Reusable3DKitShowcase
+```
+
+### Reusable Apple 3D Devices
+
+Real device models live under:
+
+```console
+public/assets/devices/apple/
+```
+
+The selected iPhone 17 Pro Max, MacBook Pro, and iPad Pro models are listed in:
+
+```console
+src/assets/devices/appleDeviceModels.json
+```
+
+They are Sketchfab Creative Commons Attribution models. Keep creator credit in:
+
+```console
+public/assets/devices/apple/ATTRIBUTION.md
+```
+
+Download the official model archives with a Sketchfab access token:
+
+```console
+SKETCHFAB_TOKEN=... npm run assets:download:devices
+npm run assets:check
+```
+
+Use them in Remotion scenes through:
+
+```tsx
+import { AppleDeviceModel } from "./components/devices";
+```
 
 ## Portfolio Integration
 
